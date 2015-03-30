@@ -5,9 +5,9 @@
 
   var defaults = {
     size: 'medium', //possible values are "small", "medium", "large", number (for same width and height) or hash: {width: 100, height: 100}
-    image_type: 'circle', //possible values are "circle", "horizontal", or hash: {image: 'image_url'}
-    type: 'block', //possible values are "block", "inline", or custom value. This value should be added to throbber types.
-    position: 'center', //possible values are "center", "left-top", "right-top", "left-bottom", "right-bottom", hash: {x: 0, y: 0} or callback that return hash
+    image: 'circle', //possible values are "circle", "horizontal", or custom image_url
+    type: 'block', //possible values are "block", "inline", or custom value.
+    position: 'center', //possible values are "center", "left-top", "right-top", "left-bottom", "right-bottom", "fullscreen", hash: {x: 0, y: 0} or callback that return hash
     overlay: { // can be hash or false
       color: '#000',
       opacity: 0.3
@@ -49,21 +49,21 @@
       case 'string':
         switch (options.size) {
           case 'small':
-            if(options.image_type === 'circle') {
+            if (options.image === 'circle') {
               size = {width: 16, height: 16};
             } else {
               size = {width: 40, height: 5};
             }
             break;
           case 'medium':
-            if(options.image_type === 'circle') {
+            if (options.image === 'circle') {
               size = {width: 32, height: 32};
             } else {
               size = {width: 80, height: 10};
             }
             break;
           case 'large':
-            if(options.image_type === 'circle') {
+            if (options.image === 'circle') {
               size = {width: 64, height: 64};
             } else {
               size = {width: 160, height: 20};
@@ -125,12 +125,18 @@
             position.x = element.outerWidth() - size.width;
             position.y = element.outerHeight() - size.height;
             break;
+          case 'fullscreen':
+            position.x = '50%';
+            position.y = '50%';
+            break;
           default:
             throwError('position', 'Possible values are "center", "left-top", "right-top", "left-bottom", "right-bottom", hash: {x: 0, y: 0} or callback that return hash');
             break;
         }
-        position.x += element.position().left;
-        position.y += element.position().top;
+        if (options.position != 'fullscreen') {
+          position.x += element.position().left;
+          position.y += element.position().top;
+        }
         break;
       case 'object':
         if (typeof options.position.x == 'number' && typeof options.position.y == 'number') {
@@ -165,8 +171,8 @@
     if (typeof options.position === 'string') {
       throberClass += ' throbber-posistion-' + options.size;
     }
-    if (typeof options.image_type === 'string') {
-      throberClass += ' throbber-image-type-' + options.image_type;
+    if (typeof options.image === 'string') {
+      throberClass += ' throbber-image-type-' + options.image;
     }
     if (options.type == 'inline' || element.css('display').indexOf('inline') >= 0) {
       throberClass += ' throbber-type-inline';
@@ -205,6 +211,13 @@
 
     var throbberObjects = getThrobberObjects(this.$element, this.options);
     var throbber = this.throbber = throbberObjects.throbber;
+
+    if (this.options.image != 'circle' && this.options.image != 'horizontal') {
+      throbber.css({
+        'background-image': this.options.image
+      });
+    }
+
     var overlay = this.overlay = throbberObjects.overlay;
 
     var position = getThrobberPostion(this.$element, this.options);
@@ -220,21 +233,23 @@
     if (this.options.type == 'inline' || this.$element.css('display').indexOf('inline') >= 0) {
       throbber.css({
         display: 'inline-block',
-        width: this.options.image_type == 'circle' ? this.$element.outerHeight() : size.width,
+        width: this.options.image == 'circle' ? this.$element.outerHeight() : size.width,
         height: this.$element.outerHeight(),
-        'background-size': this.options.image_type == 'circle' ? this.$element.outerHeight() : size.height
+        'background-size': this.options.image == 'circle' ? this.$element.outerHeight() : size.height
       });
+
       this.$element.after(throbber);
-      //throbber.hide();
-      throbber[this.options.animation.show.type](this.options.animation.show.length);
+      throbber.show();
     } else {
       throbber.css({
         left: position.x,
         top: position.y,
         width: size.width,
         height: size.height,
-        'background-size': size.width
+        'background-size': size.width,
+        position: this.options.position == 'fullscreen' ? 'fixed' : 'absolute'
       });
+
       if (this.options.overlay !== false) {
         overlay.css({
           background: this.options.overlay.color,
@@ -242,9 +257,11 @@
           // @todo @sam0delkin, maybe we should copy some other css styles?
           'border-radius': this.$element.css('border-radius')
         });
+
         this.$element.append(overlay);
         overlay[this.options.animation.show.type](this.options.animation.show.length);
       }
+
       this.$element.append(throbber);
       throbber[this.options.animation.show.type](this.options.animation.show.length);
     }
@@ -296,21 +313,29 @@
         instance = new Throbber(this, typeof param === 'object' ? param : {});
         $.data(this, 'throbber', instance);
       }
+      try {
+        if (param === 'destroy') {
+          instance.hide();
+          $.data(this, 'throbber', null);
 
-      if (param === 'show') {
-        instance.show();
+          return this;
+        }
+
+        instance[param]();
+      } catch (e) {
       }
 
-      if (param === 'hide') {
-        instance.hide();
-      }
-
-      if (param === 'destroy') {
-        instance.hide();
-        $.data(this, 'throbber', null);
-      }
     });
 
     return this;
   };
+
+  // add throbber to fullscreen
+  $.throbber = function (param) {
+    if (typeof  param == 'string') {
+      $('body').throbber({position: 'fullscreen'}).throbber(param);
+    } else {
+      $('body').throbber($.extend({}, param, {position: 'fullscreen'}));
+    }
+  }
 })(jQuery);
