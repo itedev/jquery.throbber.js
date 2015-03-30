@@ -73,9 +73,9 @@ jQuery AJAX function mappings
 
 For easier using, there are 3 functions was implemented to be a proxy for jQuery ajax functions:
 
-* jQuery.trGet (as alias to `jQuery.get`)
-* jQuery.trPost (as alias to `jQuery.post`)
-* jQuery.trAjax (as alias to `jQuery.ajax`) 
+* jQuery.thGet (as alias to `jQuery.get`)
+* jQuery.thPost (as alias to `jQuery.post`)
+* jQuery.thAjax (as alias to `jQuery.ajax`) 
 
 So, when you are using this functions, it's yntax is fully like standard, except that function is binding to Selector. 
 Throbber will be applied before AJAX call and removed right after (`jqAJAX.always` callback is used internally)
