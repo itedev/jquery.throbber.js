@@ -329,6 +329,38 @@
 
     return this;
   };
+  /**
+   * Helper method to wrap jQuery.get, jQuery.post, jQuery.ajax with throbber
+   *
+   * @param originalName
+   * @returns {jQuery}
+   */
+  function ajaxThrobber(originalName) {
+
+    var originalArguments = $.merge([], arguments).slice(1);
+    if (originalArguments.length == 0) {
+      return this;
+    }
+    var element = this;
+    element.throbber("show");
+    var jqAjax = $[originalName].apply(window, originalArguments);
+    jqAjax.always(function () {
+      element.throbber("hide");
+    });
+
+    return jqAjax;
+  }
+
+  //jQuery AJAX wrapper methods
+  $.fn.thGet = function(){
+    return ajaxThrobber.apply(this, $.merge(['get'], arguments));
+  };
+  $.fn.thPost = function(){
+    return ajaxThrobber.apply(this, $.merge(['post'], arguments));
+  };
+  $.fn.thAjax = function(){
+    return ajaxThrobber.apply(this, $.merge(['ajax'], arguments));
+  };
 
   // add throbber to fullscreen
   $.throbber = function (param) {
