@@ -16,6 +16,8 @@ Options
 -------
 
 ```javascript
+(function($){
+  $(document).ready(function(){
     // all vailable options:
     var defaults = {
       size: 'medium', //possible values are "small", "medium", "large", number (for same width and height) or hash: {width: 100, height: 100}
