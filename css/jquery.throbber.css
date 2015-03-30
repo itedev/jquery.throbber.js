@@ -1,0 +1,22 @@
+.jquery-throbber, .jquery-throbber-overlay {
+  position: absolute;
+  z-index: 1000;
+  background-color: transparent;
+}
+
+.jquery-throbber-overlay {
+  left: 0;
+  top: 0;
+}
+
+.jquery-throbber.throbber-image-type-circle {
+  background-image: url(../images/circle.gif);
+}
+
+.jquery-throbber.throbber-image-type-horizontal {
+  background-image: url(../images/horizontal.gif);
+}
+
+.jquery-throbber.throbber-type-inline {
+  margin-left: 10px;
+}
