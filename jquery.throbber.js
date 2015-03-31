@@ -49,25 +49,31 @@
       case 'string':
         switch (options.size) {
           case 'small':
+
             if (options.image === 'circle') {
               size = {width: 16, height: 16};
             } else {
               size = {width: 40, height: 5};
             }
+
             break;
           case 'medium':
+
             if (options.image === 'circle') {
               size = {width: 32, height: 32};
             } else {
               size = {width: 80, height: 10};
             }
+
             break;
           case 'large':
+
             if (options.image === 'circle') {
               size = {width: 64, height: 64};
             } else {
               size = {width: 160, height: 20};
             }
+
             break;
           default:
             throwError('size', 'Possible values are "small", "medium", "large", number (for same width and height) or hash: {width: 100, height: 100}');
@@ -75,11 +81,13 @@
         }
         break;
       case 'object':
+
         if (typeof options.size.width == 'number' && typeof options.size.height == 'number') {
           size = options.size;
         } else {
           throwError('size', 'Possible values are "small", "medium", "large", number (for same width and height) or hash: {width: 100, height: 100}');
         }
+
         break;
       case 'number':
         size = {width: options.size, height: options.size};
@@ -102,6 +110,7 @@
   function getThrobberPostion(element, options) {
     var position = {x: 0, y: 0};
     var size = getThrobberSize(options);
+
     switch (typeof options.position) {
       case 'string':
         switch (options.position) {
@@ -133,17 +142,21 @@
             throwError('position', 'Possible values are "center", "left-top", "right-top", "left-bottom", "right-bottom", hash: {x: 0, y: 0} or callback that return hash');
             break;
         }
+
         if (options.position != 'fullscreen') {
           position.x += element.position().left;
           position.y += element.position().top;
         }
+
         break;
       case 'object':
+
         if (typeof options.position.x == 'number' && typeof options.position.y == 'number') {
           position = options.position;
         } else {
           throwError('position', 'Possible values are "center", "left-top", "right-top", "left-bottom", "right-bottom", hash: {x: 0, y: 0} or callback that return hash');
         }
+
         break;
       case 'function':
         options.position.apply(element, [options]);
@@ -165,15 +178,19 @@
    */
   function getThrobberObjects(element, options) {
     var throberClass = options.throbber_class;
+
     if (typeof options.size === 'string') {
       throberClass += ' throbber-size-' + options.size;
     }
+
     if (typeof options.position === 'string') {
       throberClass += ' throbber-posistion-' + options.size;
     }
+
     if (typeof options.image === 'string') {
       throberClass += ' throbber-image-type-' + options.image;
     }
+
     if (options.type == 'inline' || element.css('display').indexOf('inline') >= 0) {
       throberClass += ' throbber-type-inline';
     } else if (options.type == 'block') {
@@ -181,6 +198,7 @@
     } else {
       throberClass += ' throbber-type-custom';
     }
+
     return {
       throbber: $('<div style="display: none;" class="' + throberClass + '"></div>'),
       overlay: $('<div style="display: none;" class="' + options.overlay_class + '"></div>')
@@ -205,6 +223,7 @@
    * Show throbber on element
    */
   Throbber.prototype.show = function () {
+
     if (this.throbber) {
       return;
     }
@@ -219,7 +238,6 @@
     }
 
     var overlay = this.overlay = throbberObjects.overlay;
-
     var position = getThrobberPostion(this.$element, this.options);
     var size = getThrobberSize(this.options);
 
@@ -309,6 +327,7 @@
         if (param === 'hide' || param === 'destroy') {
           return;
         }
+
         // Create the plugin instance
         instance = new Throbber(this, typeof param === 'object' ? param : {});
         $.data(this, 'throbber', instance);
@@ -329,6 +348,7 @@
 
     return this;
   };
+
   /**
    * Helper method to wrap jQuery.get, jQuery.post, jQuery.ajax with throbber
    *
@@ -338,12 +358,15 @@
   function ajaxThrobber(originalName) {
 
     var originalArguments = $.merge([], arguments).slice(1);
+
     if (originalArguments.length == 0) {
       return this;
     }
+
     var element = this;
     element.throbber("show");
     var jqAjax = $[originalName].apply(window, originalArguments);
+
     jqAjax.always(function () {
       element.throbber("hide");
     });
@@ -352,22 +375,24 @@
   }
 
   //jQuery AJAX wrapper methods
-  $.fn.thGet = function(){
+  $.fn.thGet = function () {
     return ajaxThrobber.apply(this, $.merge(['get'], arguments));
   };
-  $.fn.thPost = function(){
+  $.fn.thPost = function () {
     return ajaxThrobber.apply(this, $.merge(['post'], arguments));
   };
-  $.fn.thAjax = function(){
+  $.fn.thAjax = function () {
     return ajaxThrobber.apply(this, $.merge(['ajax'], arguments));
   };
 
   // add throbber to fullscreen
   $.throbber = function (param) {
+
     if (typeof  param == 'string') {
       $('body').throbber({position: 'fullscreen'}).throbber(param);
     } else {
       $('body').throbber($.extend({}, param, {position: 'fullscreen'}));
     }
+
   }
 })(jQuery);
