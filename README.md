@@ -18,7 +18,7 @@ Options
 ```javascript
 (function($){
   $(document).ready(function(){
-    // all vailable options:
+    // all available options:
     var defaults = {
       size: 'medium', //possible values are "small", "medium", "large", number (for same width and height) or hash: {width: 100, height: 100}
       image: 'circle', //possible values are "circle", "horizontal", or custom image_url
@@ -86,6 +86,6 @@ Here is the example os usage:
 $('#selector').thGet('http://github.com', {}, function () {
   // this is the success handler of AJAX resquest. 
   // right before AJAX call, throbber will be displayed on '#selector' element
-  // and right after AJAX request completes (either if there is the error), throbber will be removed from the element
+  // and right after AJAX request completes (even if there is the error), throbber will be removed from the element
 }, 'json');
 ```
